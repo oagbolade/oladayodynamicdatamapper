@@ -20,20 +20,26 @@ router.route("/data").get((req, res, next) => {
 router
   .route("/filter/:providerId")
   .get((req, res, next) => {
-    console.log(req.query);
     // Compose quaery values
-    let name = req.query.name.split(":")[1];
-    let age = req.query.name.split(":")[1];
-    let timestamp = req.query.name.split(":")[1];
-    console.log(name);
-
-    return;
+    let name = req.query.name.split(":");
+    let age = req.query.age.split(":");
+    let timestamp = req.query.timestamp.split(":");
+    
     dataMapperModel.find(
       {
         providerId: req.params.providerId,
-        name,
-        age: { $lt: 30 },
-        timestamp: { $lt: 30 }
+        fields: {
+          $elemMatch: {
+            name: name[1],
+            age:
+              age[0] === "lt"
+                ? { $lt: age[1] }
+                : age[0] === "gt"
+                ? { $gt: age[1] }
+                : age[0] === "eq" ? { $eq: age[1] } : age[1],
+          }
+        }
+        // timestamp: { $lt: timestamp[1] }
       },
       (error, data) => {
         if (error) {
