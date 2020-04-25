@@ -10,7 +10,7 @@ let dataMapperSchema = new Schema(
       {
         name: String,
         age: Number,
-        timestamp: Date
+        timestamp: Number
       }
     ]
   },

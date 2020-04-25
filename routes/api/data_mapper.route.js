@@ -17,9 +17,33 @@ router.route("/data").get((req, res, next) => {
 });
 
 // Filter data
-router.route("/filter").get((req, res, next) => {
-  res.send("It workds");
-});
+router
+  .route("/filter/:providerId")
+  .get((req, res, next) => {
+    console.log(req.query);
+    // Compose quaery values
+    let name = req.query.name.split(":")[1];
+    let age = req.query.name.split(":")[1];
+    let timestamp = req.query.name.split(":")[1];
+    console.log(name);
+
+    return;
+    dataMapperModel.find(
+      {
+        providerId: req.params.providerId,
+        name,
+        age: { $lt: 30 },
+        timestamp: { $lt: 30 }
+      },
+      (error, data) => {
+        if (error) {
+          return next(error);
+        } else {
+          res.json(data);
+        }
+      }
+    );
+  });
 
 // Create data specification
 router.route("/create").post((req, res, next) => {
