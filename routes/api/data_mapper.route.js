@@ -17,39 +17,46 @@ router.route("/data").get((req, res, next) => {
 });
 
 // Filter data
-router
-  .route("/filter/:providerId")
-  .get((req, res, next) => {
-    // Compose quaery values
-    let name = req.query.name.split(":");
-    let age = req.query.age.split(":");
-    let timestamp = req.query.timestamp.split(":");
-    
-    dataMapperModel.find(
-      {
-        providerId: req.params.providerId,
-        fields: {
-          $elemMatch: {
-            name: name[1],
-            age:
-              age[0] === "lt"
-                ? { $lt: age[1] }
-                : age[0] === "gt"
-                ? { $gt: age[1] }
-                : age[0] === "eq" ? { $eq: age[1] } : age[1],
-          }
-        }
-        // timestamp: { $lt: timestamp[1] }
-      },
-      (error, data) => {
-        if (error) {
-          return next(error);
-        } else {
-          res.json(data);
+router.route("/filter/:providerId").get((req, res, next) => {
+  // Compose query values
+  let name = req.query.name.split(":");
+  let age = req.query.age.split(":");
+  let timestamp = req.query.timestamp.split(":");
+
+  dataMapperModel.find(
+    {
+      providerId: req.params.providerId,
+      fields: {
+        $elemMatch: {
+          name: name[1],
+          age:
+            age[0] === "lt"
+              ? { $lt: age[1] }
+              : age[0] === "gt"
+              ? { $gt: age[1] }
+              : age[0] === "eq"
+              ? { $eq: age[1] }
+              : age[1],
+          timestamp:
+            timestamp[0] === "lt"
+              ? { $lt: timestamp[1] }
+              : timestamp[0] === "gt"
+              ? { $gt: timestamp[1] }
+              : timestamp[0] === "eq"
+              ? { $eq: timestamp[1] }
+              : timestamp[1]
         }
       }
-    );
-  });
+    },
+    (error, data) => {
+      if (error) {
+        return next(error);
+      } else {
+        res.json(data);
+      }
+    }
+  );
+});
 
 // Create data specification
 router.route("/create").post((req, res, next) => {
@@ -66,7 +73,7 @@ router.route("/create").post((req, res, next) => {
 
   dataSpecification
     .save()
-    .then(response => res.status(200).json({data: response, success: "true" }))
+    .then(response => res.status(200).json({ data: response, success: "true" }))
     .catch(err => console.log(err));
 });
 
